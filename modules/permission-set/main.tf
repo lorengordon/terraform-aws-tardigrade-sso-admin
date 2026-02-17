@@ -23,6 +23,15 @@ resource "aws_ssoadmin_managed_policy_attachment" "this" {
   permission_set_arn = aws_ssoadmin_permission_set.this.arn
 }
 
+resource "aws_ssoadmin_managed_policy_attachments_exclusive" "this" {
+  count = var.permission_set.managed_policy_attachments_exclusive.aws == true ? 1 : 0
+
+  instance_arn       = local.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.this.arn
+
+  managed_policy_arns = [for attachment in aws_ssoadmin_managed_policy_attachment.this : attachment.managed_policy_arn]
+}
+
 resource "aws_ssoadmin_customer_managed_policy_attachment" "this" {
   for_each = { for attachment in var.permission_set.managed_policy_attachments : "${var.permission_set.name}:${attachment.policy_name}" => attachment if attachment.policy_type == "CUSTOMER" }
 
@@ -32,6 +41,22 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "this" {
   customer_managed_policy_reference {
     name = each.value.policy_name
     path = each.value.policy_path
+  }
+}
+
+resource "aws_ssoadmin_customer_managed_policy_attachments_exclusive" "this" {
+  count = var.permission_set.managed_policy_attachments_exclusive.customer == true ? 1 : 0
+
+  instance_arn       = local.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.this.arn
+
+  dynamic "customer_managed_policy_reference" {
+    for_each = aws_ssoadmin_customer_managed_policy_attachment.this
+
+    content {
+      name = one(each.value.customer_managed_policy_reference).name
+      path = one(each.value.customer_managed_policy_reference).path
+    }
   }
 }
 

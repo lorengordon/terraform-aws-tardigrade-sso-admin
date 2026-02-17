@@ -8,13 +8,13 @@ Module for managing an AWS SSO Permission Set
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.40.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.31.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.40.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.31.0 |
 
 ## Resources
 
@@ -27,7 +27,7 @@ Module for managing an AWS SSO Permission Set
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_permission_set"></a> [permission\_set](#input\_permission\_set) | Object of inputs for managing an AWS SSO Permission Set | <pre>object({<br/>    name             = string<br/>    description      = optional(string)<br/>    inline_policy    = optional(string)<br/>    instance_arn     = optional(string)<br/>    relay_state      = optional(string)<br/>    partition        = optional(string)<br/>    session_duration = optional(string, "PT1H")<br/>    tags             = optional(map(string))<br/>    managed_policy_attachments = optional(list(object({<br/>      policy_name = string<br/>      policy_path = optional(string, "/")<br/>      policy_type = optional(string, "AWS")<br/>    })), [])<br/>  })</pre> | n/a | yes |
+| <a name="input_permission_set"></a> [permission\_set](#input\_permission\_set) | Object of inputs for managing an AWS SSO Permission Set | <pre>object({<br/>    name             = string<br/>    description      = optional(string)<br/>    inline_policy    = optional(string)<br/>    instance_arn     = optional(string)<br/>    relay_state      = optional(string)<br/>    partition        = optional(string)<br/>    session_duration = optional(string, "PT1H")<br/>    tags             = optional(map(string))<br/><br/>    managed_policy_attachments = optional(list(object({<br/>      policy_name = string<br/>      policy_path = optional(string, "/")<br/>      policy_type = optional(string, "AWS")<br/>    })), [])<br/><br/>    managed_policy_attachments_exclusive = optional(object({<br/>      aws      = optional(bool, true)<br/>      customer = optional(bool, true)<br/>    }), {})<br/>  })</pre> | n/a | yes |
 
 ## Outputs
 

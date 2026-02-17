@@ -11,11 +11,17 @@ variable "permission_set" {
     partition        = optional(string)
     session_duration = optional(string, "PT1H")
     tags             = optional(map(string))
+
     managed_policy_attachments = optional(list(object({
       policy_name = string
       policy_path = optional(string, "/")
       policy_type = optional(string, "AWS")
     })), [])
+
+    managed_policy_attachments_exclusive = optional(object({
+      aws      = optional(bool, true)
+      customer = optional(bool, true)
+    }), {})
   })
 
   validation {
