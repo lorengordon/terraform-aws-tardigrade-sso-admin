@@ -1,27 +1,11 @@
 name: Run lint and static analyis checks
 on:
   pull_request:
-  workflow_call:
 
 concurrency:
   group: lint-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  tardigradelint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone this git repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-
-      - name: Project Syntax Verification
-        run: make docker/run target=lint
-
-  actionlint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone this git repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-
-      - name: Check workflow files
-        uses: reviewdog/action-actionlint@e58ee9d111489c31395fbe4857b0be6e7635dbda
+  lint:
+    uses: plus3it/actions-workflows/.github/workflows/lint.yml@269d875599c92395f7fa99cab43edc1820798e61

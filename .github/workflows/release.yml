@@ -8,50 +8,12 @@ on:
   push:
     branches:
       - main
+      - master
     paths:
       - .bumpversion.cfg
 
 jobs:
-  lint:
-    uses: ./.github/workflows/lint.yml
-
-  test:
-    uses: ./.github/workflows/test.yml
-
   release:
-    needs:
-      - lint
-      # The test workflow currently is expected to fail, since neither localstack
-      # nor moto support the required AWS SSO endpoints
-      # - test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          fetch-depth: 0
-      - run: git fetch --tags --force origin
-      # WA: https://github.com/actions/checkout/issues/882
-
-      - name: Test release condition
-        id: release
-        run: |
-          set -eu -o pipefail
-          RELEASE=false
-          PRIOR_VERSION=$(git describe --abbrev=0 --tags || true)
-          RELEASE_VERSION=$(grep current_version .bumpversion.cfg | sed 's/^.*= //' )
-          if [[ "$PRIOR_VERSION" != "$RELEASE_VERSION" ]]; then RELEASE=true; fi
-          echo "condition=${RELEASE}"
-          echo "version=${RELEASE_VERSION}"
-          echo "condition=${RELEASE}" >> "$GITHUB_OUTPUT"
-          echo "version=${RELEASE_VERSION}" >> "$GITHUB_OUTPUT"
-
-      - name: Create release
-        if: steps.release.outputs.condition == 'true'
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b
-        with:
-          name: ${{ steps.release.outputs.version }}
-          tag_name: ${{ steps.release.outputs.version }}
-          generate_release_notes: true
-          target_commitish: ${{ env.GITHUB_REF }}
-          token: ${{ secrets.GH_RELEASES_TOKEN }}
+    uses: plus3it/actions-workflows/.github/workflows/release.yml@269d875599c92395f7fa99cab43edc1820798e61
+    secrets:
+      release-token: ${{ secrets.GH_RELEASES_TOKEN }}
